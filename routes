@@ -1,0 +1,41 @@
+# Archivo: routes.py
+
+from flask import Flask, jsonify, request
+
+app = Flask(__name__)
+
+# Aquí tendrías tu lógica para interactuar con la base de datos o los datos
+# No tengo acceso a tu base de datos ni a la estructura exacta, así que estos son ejemplos hipotéticos
+
+productos = [
+    {"id": 1, "nombre": "Producto 1", "categoria": "Categoria 1", "disponible": True},
+    {"id": 2, "nombre": "Producto 2", "categoria": "Categoria 2", "disponible": False},
+    # ... más productos
+]
+
+@app.route('/productos/<int:producto_id>', methods=['GET'])
+def obtener_producto(producto_id):
+    # Leer producto por ID
+    producto = next((p for p in productos if p['id'] == producto_id), None)
+    if producto:
+        return jsonify(producto), 200
+    return jsonify({'mensaje': 'Producto no encontrado'}), 404
+
+@app.route('/productos/<int:producto_id>', methods=['PUT'])
+def actualizar_producto(producto_id):
+    # Actualizar un producto por ID
+    producto = next((p for p in productos if p['id'] == producto_id), None)
+    if not producto:
+        return jsonify({'mensaje': 'Producto no encontrado'}), 404
+
+    data = request.get_json()
+    producto['nombre'] = data.get('nombre', producto['nombre'])
+    producto['categoria'] = data.get('categoria', producto['categoria'])
+    producto['disponible'] = data.get('disponible', producto['disponible'])
+
+    return jsonify(producto), 200
+
+# Funciones similares para eliminar, listar todo, listar por nombre, categoría, disponibilidad, etc.
+
+if __name__ == '__main__':
+    app.run(debug=True)
